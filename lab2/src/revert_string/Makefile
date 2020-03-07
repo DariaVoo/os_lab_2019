@@ -65,7 +65,7 @@ $(SHAREDLIB): $(LIB_SRCS) $(LIB_OBJ)
 #Link with shared lib
 linkshared: $(MAIN) $(SHAREDLIB)
 	gcc $(CFLAGS) -c -I $(HEADERS) $(MAIN) -o $(MAIN_OBJ)
-	gcc $(MAIN_OBJ) -L . -lrevert -o $(NAMESHARED)
+	gcc $(MAIN_OBJ) -L./ -lrevert -o $(NAMESHARED)
 
 clean:
 	rm -rf $(OBJ_DIR)
