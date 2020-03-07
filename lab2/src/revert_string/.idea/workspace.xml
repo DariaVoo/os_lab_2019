@@ -1,9 +1,7 @@
 <?xml version="1.0" encoding="UTF-8"?>
 <project version="4">
   <component name="CMakeRunConfigurationManager" shouldGenerate="true" shouldDeleteObsolete="true">
-    <generated>
-      <config projectName="revert_string" targetName="revert_string" />
-    </generated>
+    <generated />
   </component>
   <component name="CMakeSettings">
     <configurations>
@@ -11,13 +9,7 @@
     </configurations>
   </component>
   <component name="ChangeListManager">
-    <list default="true" id="e4bd9660-8d5a-4602-8840-d8974d21a8bc" name="Default Changelist" comment="">
-      <change afterPath="$PROJECT_DIR$/../../../.gitignore.swp" afterDir="false" />
-      <change afterPath="$PROJECT_DIR$/ft_strlen.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/main.c" beforeDir="false" afterPath="$PROJECT_DIR$/main.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/revert_string.c" beforeDir="false" afterPath="$PROJECT_DIR$/revert_string.c" afterDir="false" />
-      <change beforePath="$PROJECT_DIR$/revert_string.h" beforeDir="false" afterPath="$PROJECT_DIR$/revert_string.h" afterDir="false" />
-    </list>
+    <list default="true" id="e4bd9660-8d5a-4602-8840-d8974d21a8bc" name="Default Changelist" comment="" />
     <option name="EXCLUDED_CONVERTED_TO_IGNORED" value="true" />
     <option name="SHOW_DIALOG" value="false" />
     <option name="HIGHLIGHT_CONFLICTS" value="true" />
@@ -27,7 +19,6 @@
   <component name="ClangdSettings">
     <option name="formatViaClangd" value="false" />
   </component>
-  <component name="ExecutionTargetManager" SELECTED_TARGET="CMakeBuildProfile:Debug" />
   <component name="Git.Settings">
     <option name="RECENT_GIT_ROOT_PATH" value="$PROJECT_DIR$/../../.." />
   </component>
@@ -45,6 +36,8 @@
   <component name="PropertiesComponent">
     <property name="ASKED_ADD_EXTERNAL_FILES" value="true" />
     <property name="WebServerToolWindowFactoryState" value="false" />
+    <property name="nodejs_package_manager_path" value="npm" />
+    <property name="settings.editor.selected.configurable" value="preferences.sourceCode.C/C++" />
   </component>
   <component name="RunDashboard">
     <option name="ruleStates">
@@ -58,13 +51,6 @@
       </list>
     </option>
   </component>
-  <component name="RunManager">
-    <configuration name="revert_string" type="CMakeRunConfiguration" factoryName="Application" PASS_PARENT_ENVS_2="true" PROJECT_NAME="revert_string" TARGET_NAME="revert_string" CONFIG_NAME="Debug" RUN_TARGET_PROJECT_NAME="revert_string" RUN_TARGET_NAME="revert_string">
-      <method v="2">
-        <option name="com.jetbrains.cidr.execution.CidrBuildBeforeRunTaskProvider$BuildBeforeRunTask" enabled="true" />
-      </method>
-    </configuration>
-  </component>
   <component name="SvnConfiguration">
     <configuration />
   </component>
@@ -75,7 +61,7 @@
       <option name="number" value="Default" />
       <option name="presentableId" value="Default" />
       <updated>1583567988943</updated>
-      <workItem from="1583567990347" duration="2713000" />
+      <workItem from="1583567990347" duration="7464000" />
     </task>
     <servers />
   </component>

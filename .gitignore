@@ -1,3 +1,5 @@
+*.a
+.idea
 cmake-build-debug
 out*
 *.out
