@@ -1,6 +1,8 @@
 *.a
 .idea*
 cmake-build-debug
+*.o
+*.so
 out*
 *.out
 *.gch
