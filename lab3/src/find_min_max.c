@@ -1,19 +1,19 @@
 #include "find_min_max.h"
-
 #include <limits.h>
 
-struct MinMax GetMinMax(int *array, unsigned int begin, unsigned int end) {
-  struct MinMax min_max;
-
+t_min_max get_min_max(int *array, unsigned int begin, unsigned int end)
+{
+  t_min_max min_max;
   min_max.min = INT_MAX;
   min_max.max = INT_MIN;
+
   while (begin < end)
   {
-  	if (array[begin] > min_max.max)
-  		min_max.max = array[begin];
-  	if (array[begin] < min_max.min)
-  		min_max.min = array[begin];
-  	begin++;
+	  if (array[begin] > min_max.max)
+		  min_max.max = array[begin];
+	  if (array[begin] < min_max.min)
+		  min_max.min = array[begin];
+	  begin++;
   }
   return min_max;
 }

@@ -15,29 +15,35 @@
 #include "find_min_max.h"
 #include "utils.h"
 
-int main(int argc, char **argv) {
+int main(int argc, char **argv)
+{
   int seed = -1;
   int array_size = -1;
   int pnum = -1;
   bool with_files = false;
 
-  while (true) {
+  while (true)
+  {
     int current_optind = optind ? optind : 1;
 
-    static struct option options[] = {{"seed", required_argument, 0, 0},
-                                      {"array_size", required_argument, 0, 0},
-                                      {"pnum", required_argument, 0, 0},
-                                      {"by_files", no_argument, 0, 'f'},
-                                      {0, 0, 0, 0}};
+    static struct option options[] = {
+    		{"seed", required_argument, 0, 0},
+    		{"array_size", required_argument, 0, 0},
+    		{"pnum", required_argument, 0, 0},
+    		{"by_files", no_argument, 0, 'f'},
+    		{0, 0, 0, 0}};
 
     int option_index = 0;
     int c = getopt_long(argc, argv, "f", options, &option_index);
 
-    if (c == -1) break;
+    if (c == -1)
+    	break;
 
-    switch (c) {
+    switch (c)
+    {
       case 0:
-        switch (option_index) {
+        switch (option_index)
+        {
           case 0:
             seed = atoi(optarg);
             // your code here
@@ -85,23 +91,27 @@ int main(int argc, char **argv) {
   }
 
   int *array = malloc(sizeof(int) * array_size);
-  GenerateArray(array, array_size, seed);
+  generate_array(array, array_size, seed);
   int active_child_processes = 0;
 
   struct timeval start_time;
   gettimeofday(&start_time, NULL);
 
-  for (int i = 0; i < pnum; i++) {
+  for (int i = 0; i < pnum; i++)
+  {
     pid_t child_pid = fork();
-    if (child_pid >= 0) {
+    if (child_pid >= 0)
+    {
       // successful fork
       active_child_processes += 1;
-      if (child_pid == 0) {
+      if (child_pid == 0)
+      {
         // child process
 
         // parallel somehow
 
-        if (with_files) {
+        if (with_files)
+        {
           // use files here
         } else {
           // use pipe here
@@ -121,15 +131,17 @@ int main(int argc, char **argv) {
     active_child_processes -= 1;
   }
 
-  struct MinMax min_max;
+  t_min_max min_max;
   min_max.min = INT_MAX;
   min_max.max = INT_MIN;
 
-  for (int i = 0; i < pnum; i++) {
+  for (int i = 0; i < pnum; i++)
+  {
     int min = INT_MAX;
     int max = INT_MIN;
 
-    if (with_files) {
+    if (with_files)
+    {
       // read from files
     } else {
       // read from pipes

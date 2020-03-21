@@ -1,11 +1,12 @@
 #ifndef UTILS_H
-#define UTILS_H
+# define UTILS_H
 
-struct MinMax {
+typedef struct s_min_max
+{
   int min;
   int max;
-}	;
+}	t_min_max;
 
-void GenerateArray(int *array, unsigned int array_size, unsigned int seed);
+void generate_array(int *array, unsigned int array_size, unsigned int seed);
 
 #endif
