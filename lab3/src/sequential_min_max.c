@@ -4,6 +4,19 @@
 #include "find_min_max.h"
 #include "utils.h"
 
+void print_arr(int *arr, int size)
+{
+	int i;
+
+	i = 0;
+	while (i < size)
+	{
+		printf("%d ", arr[i]);
+		i++;
+	}
+	printf("\n");
+}
+
 int main(int argc, char **argv)
 {
   if (argc != 3)
@@ -31,6 +44,7 @@ int main(int argc, char **argv)
 
   array  = (int *)malloc(array_size * sizeof(int));
   generate_array(array, array_size, seed);
+  print_arr(array, array_size);
   min_max = get_min_max(array, 0, array_size);
   free(array);
 

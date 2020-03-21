@@ -2,14 +2,14 @@ CC = gcc
 INCLUDES := -I .
 
 # When the work is done add the flags
-CFLAGS := # -Wall -Wextra -Werror
+CFLAGS := -Wall -Wextra -Werror
 
 HEADERS = utils.h find_min_max.h
 
 SRC_SEQUENTIAL = utils.c find_min_max.c sequential_min_max.c
 OBJ_SEQUENTIAL = $(patsubst %.c, %.o, $(SRC_SEQUENTIAL))
 
-SRC_PARALLEL = utils.c find_min_max.c parallel_min_max.c
+SRC_PARALLEL = utils.c find_min_max.c parallel_min_max.c ft_itoa.c
 OBJ_PARALLEL = $(patsubst %.c, %.o, $(SRC_PARALLEL))
 
 all: sequential_min_max parallel_min_max

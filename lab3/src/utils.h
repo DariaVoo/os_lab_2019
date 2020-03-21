@@ -9,4 +9,5 @@ typedef struct s_min_max
 
 void generate_array(int *array, unsigned int array_size, unsigned int seed);
 
+char			*ft_itoa(int n);
 #endif

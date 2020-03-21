@@ -2,8 +2,14 @@
 
 void generate_array(int *array, unsigned int array_size, unsigned int seed)
 {
+  unsigned int i;
+  //srand() используется для установки начала последовательности,
+  //генерируемой функцией rand()
   srand(seed);
-  for (int i = 0; i < array_size; i++) {
-    array[i] = rand();
+  i = 0;
+  while (i < array_size)
+  {
+    array[i] = rand() % 1000;
+    i++;
   }
 }
