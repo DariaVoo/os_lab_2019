@@ -104,7 +104,7 @@ int main(int argc, char **argv)
     return 1;
   }
 
-  printf("seed %d\narray_size %d\npnum %d\n", seed, array_size, pnum);
+//  printf("seed %d\narray_size %d\npnum %d\n", seed, array_size, pnum);
 
   /*-------------------------------
   * ------- Начинаем работу -------
@@ -120,17 +120,23 @@ int main(int argc, char **argv)
    * в соответссвующем процессе
    * и записываем в файлы результы
    * */
-  int *status_proc = NULL;
-
   /**Количество отрезков на которое мы разделяем массив*/
   int			count_num;
   /**Индексы начала и конца поиска*/
   int start = 0;
   int end = 0;
+  /**Массив для каналов pipe*/
+  int fd[2];
 
   count_num = array_size / pnum;
+  if (pipe(fd) < 0)
+  {
+  	printf("Can't create pipe\n");
+  	exit(-1);
+  }
   for (int i = 0; i < pnum; i++)
   {
+
     pid_t child_pid = fork();
     if (child_pid >= 0)
     {
@@ -142,16 +148,14 @@ int main(int argc, char **argv)
       	// child process
         t_min_max	child_buf;
 
-        printf("active child process %d\n", active_child_processes);
-
         start = count_num * (active_child_processes - 1);
         end = count_num * active_child_processes - 1;
-        printf("start %d\t end %d\n", start, end);
+//        printf("start %d\t end %d\n", start, end);
         child_buf = get_min_max(array, start, end);
         // parallel somehow
         if (with_files)
         {
-			write(0, "File\n", 5);
+//			write(0, "File\n", 5);
 			// use files here
 			char *file_name;
 			FILE *fp;
@@ -169,28 +173,44 @@ int main(int argc, char **argv)
 			if (fclose(fp) != 0)
 				printf("File %s don't close!", file_name);
 
-			write(0, "EXIT\n", 5);
 			/**Завершаем процесс*/
 			exit(EXIT_SUCCESS);
         } else {
-          // use pipe here
-        }
-        return 0;
-      }
-      else
-      	wait(status_proc);
+			// use pipe here
+			close(fd[0]);
+			char *max, *min;
+
+			max = ft_itoa(child_buf.max);
+			min = ft_itoa(child_buf.min);
+
+			printf( "max %d\t%d\n", child_buf.max, child_buf.min);
+
+			/**Записываем в поток max min*/
+			write(fd[1], max, strlen(max));
+			write(fd[1], " ", 1);
+			write(fd[1], min, strlen(min));
+			write(fd[1], "\n", 1);
+			/**Закрываем pipe*/
+			close(fd[1]);
+			exit(1);
+		}
+	  }
+//      else
+//      	wait(NULL);
     }
     else
 	{
       printf("Fork failed!\n");
       return 1;
     }
+
+
   }
 
   while (active_child_processes > 0)
   {
+  	wait(NULL);
     // your code here
-//    wait();
     active_child_processes -= 1;
   }
 
@@ -198,10 +218,8 @@ int main(int argc, char **argv)
   min_max.min = INT_MAX;
   min_max.max = INT_MIN;
 
-  /** Считываем из файлов min max
-   * и ищем наименьшее и наибольшее значение
-   * из всех найденных min max
-   **/
+  /*Входной поток данных(для записи) не понадобится, поэтому закрываем его*/
+  close(fd[1]);
   for (int i = 1; i <= pnum; i++)
   {
   	write(0, "Read\t", 5);
@@ -210,7 +228,11 @@ int main(int argc, char **argv)
 
     if (with_files)
     {
-      // read from files
+		/** Считываем из файлов min max
+		 * и ищем наименьшее и наибольшее значение
+		 * из всех найденных min max
+		 **/
+		// read from files
 		char *file_name;
 		FILE *fp;
 
@@ -230,12 +252,27 @@ int main(int argc, char **argv)
 
 	} else {
       // read from pipes
-    }
+      char	*str, *istr;
+      char	sep[10] = " ";
 
-    /**Сравниваем считанные min max с глобальными значениями*/
+
+      if (get_next_line(fd[0], &str) < 0)
+      	break ;
+      printf("STR: %s\n", str);
+      istr = strtok(str, sep);
+      if (istr != NULL) {
+      	max = atoi((const char*)istr);
+      	min = atoi((const char*)strtok(NULL, sep));
+      }
+      free(str);
+	}
+
+	  /**Сравниваем считанные min max с глобальными значениями*/
     if (min < min_max.min) min_max.min = min;
     if (max > min_max.max) min_max.max = max;
   }
+  /*Закрываем выходной поток*/
+  close(fd[0]);
 
   struct timeval finish_time;
   gettimeofday(&finish_time, NULL);

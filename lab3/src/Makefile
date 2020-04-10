@@ -6,10 +6,10 @@ CFLAGS := -Wall -Wextra -Werror
 
 HEADERS = utils.h find_min_max.h
 
-SRC_SEQUENTIAL = utils.c find_min_max.c sequential_min_max.c print_arr.c
+SRC_SEQUENTIAL = utils.c find_min_max.c sequential_min_max.c print_arr.c get_next_line.c
 OBJ_SEQUENTIAL = $(patsubst %.c, %.o, $(SRC_SEQUENTIAL))
 
-SRC_PARALLEL = utils.c find_min_max.c parallel_min_max.c ft_itoa.c print_arr.c
+SRC_PARALLEL = utils.c find_min_max.c parallel_min_max.c ft_itoa.c print_arr.c get_next_line.c
 OBJ_PARALLEL = $(patsubst %.c, %.o, $(SRC_PARALLEL))
 
 all: sequential_min_max parallel_min_max
