@@ -33,6 +33,7 @@
 2. [Мануал для pipe](http://man7.org/linux/man-pages/man2/pipe.2.html)
 3. [Небольшой туториал для работы с файлами](https://www.cprogramming.com/tutorial/cfileio.html)
 4. [fprintf, sprintf](http://en.cppreference.com/w/c/io/fprintf), [scanf, fscanf](http://en.cppreference.com/w/c/io/fscanf) - функции, которые кажутся полезными.
+[Использование pipe](https://www.intuit.ru/studies/courses/2249/52/lecture/1554?page=4)
 
 ## Задание 4
 
