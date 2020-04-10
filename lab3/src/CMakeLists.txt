@@ -11,5 +11,7 @@ add_executable(src
         parallel_min_max.c
 #        sequential_min_max.c
         utils.c
+        get_next_line.c
+        fork_with_exec.c
         ft_itoa.c
         utils.h)

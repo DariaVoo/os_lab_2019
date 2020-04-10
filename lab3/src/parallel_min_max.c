@@ -120,15 +120,16 @@ int main(int argc, char **argv)
    * в соответссвующем процессе
    * и записываем в файлы результы
    * */
-  /**Количество отрезков на которое мы разделяем массив*/
+  /*Количество отрезков на которое мы разделяем массив*/
   int			count_num;
-  /**Индексы начала и конца поиска*/
+  /*Индексы начала и конца поиска*/
   int start = 0;
   int end = 0;
-  /**Массив для каналов pipe*/
+  /*Массив для каналов pipe*/
   int fd[2];
 
   count_num = array_size / pnum;
+  /**Создаём pipe*/
   if (pipe(fd) < 0)
   {
   	printf("Can't create pipe\n");
@@ -177,6 +178,7 @@ int main(int argc, char **argv)
 			exit(EXIT_SUCCESS);
         } else {
 			// use pipe here
+			/**Закрываем конец канала для чтения*/
 			close(fd[0]);
 			char *max, *min;
 
@@ -185,26 +187,22 @@ int main(int argc, char **argv)
 
 			printf( "max %d\t%d\n", child_buf.max, child_buf.min);
 
-			/**Записываем в поток max min*/
+			/**Записываем в pipe max min*/
 			write(fd[1], max, strlen(max));
 			write(fd[1], " ", 1);
 			write(fd[1], min, strlen(min));
 			write(fd[1], "\n", 1);
-			/**Закрываем pipe*/
+			/**Закрываем конец канала для записи*/
 			close(fd[1]);
 			exit(1);
 		}
 	  }
 //      else
 //      	wait(NULL);
-    }
-    else
-	{
+    } else {
       printf("Fork failed!\n");
       return 1;
     }
-
-
   }
 
   while (active_child_processes > 0)
@@ -218,7 +216,7 @@ int main(int argc, char **argv)
   min_max.min = INT_MAX;
   min_max.max = INT_MIN;
 
-  /*Входной поток данных(для записи) не понадобится, поэтому закрываем его*/
+  /**Входной поток данных(для записи) не понадобится, поэтому закрываем его*/
   close(fd[1]);
   for (int i = 1; i <= pnum; i++)
   {
@@ -267,11 +265,11 @@ int main(int argc, char **argv)
       free(str);
 	}
 
-	  /**Сравниваем считанные min max с глобальными значениями*/
+    /**Сравниваем считанные min max с глобальными значениями*/
     if (min < min_max.min) min_max.min = min;
     if (max > min_max.max) min_max.max = max;
   }
-  /*Закрываем выходной поток*/
+  /**Закрываем выходной поток*/
   close(fd[0]);
 
   struct timeval finish_time;
