@@ -99,7 +99,7 @@ int main(int argc, char **argv)
     return 1;
   }
   if (seed == -1 || array_size == -1 || pnum == -1) {
-    printf("Usage: %s --seed \"num\" --array_size \"num\" --pnum \"num\" \n",
+    printf("Usage: %s --seed \"num\" --array_size \"num\" --pnum \"num\" (optional --by_files)\n",
            argv[0]);
     return 1;
   }
@@ -135,7 +135,6 @@ int main(int argc, char **argv)
     if (child_pid >= 0)
     {
     	printf("child_pid %d\n", child_pid);
-//    	write(0, "here\n", 5);
       // successful fork
       active_child_processes += 1;
       if (child_pid == 0)
