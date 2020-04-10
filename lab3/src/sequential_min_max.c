@@ -2,20 +2,6 @@
 #include <stdlib.h>
 
 #include "find_min_max.h"
-#include "utils.h"
-
-void print_arr(int *arr, int size)
-{
-	int i;
-
-	i = 0;
-	while (i < size)
-	{
-		printf("%d ", arr[i]);
-		i++;
-	}
-	printf("\n");
-}
 
 int main(int argc, char **argv)
 {
@@ -25,6 +11,7 @@ int main(int argc, char **argv)
     return 1;
   }
 
+  /*Начало последовательности для рандома*/
   int seed = atoi(argv[1]);
   if (seed <= 0)
   {

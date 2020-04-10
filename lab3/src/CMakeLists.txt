@@ -9,7 +9,7 @@ add_executable(src
         find_min_max.c
         find_min_max.h
         parallel_min_max.c
-        sequential_min_max.c
+#        sequential_min_max.c
         utils.c
         ft_itoa.c
         utils.h)

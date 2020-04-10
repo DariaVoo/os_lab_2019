@@ -116,39 +116,63 @@ int main(int argc, char **argv)
   struct timeval start_time;
   gettimeofday(&start_time, NULL);
 
-  /* Вычисляем min max для каждого участка
+  /** Вычисляем min max для каждого участка
    * в соответссвующем процессе
-   * и записываем в файлы результы*/
+   * и записываем в файлы результы
+   * */
   int *status_proc = NULL;
+
+  /**Количество отрезков на которое мы разделяем массив*/
+  int			count_num;
+  /**Индексы начала и конца поиска*/
+  int start = 0;
+  int end = 0;
+
+  count_num = array_size / pnum;
   for (int i = 0; i < pnum; i++)
   {
     pid_t child_pid = fork();
     if (child_pid >= 0)
     {
+    	printf("child_pid %d\n", child_pid);
+//    	write(0, "here\n", 5);
       // successful fork
       active_child_processes += 1;
       if (child_pid == 0)
       {
-        // child process
+      	// child process
         t_min_max	child_buf;
-        int			count_num;
 
-        count_num = array_size / pnum;
-        child_buf = get_min_max(array,
-        		count_num * active_child_processes - 1,
-        		count_num * active_child_processes);
+        printf("active child process %d\n", active_child_processes);
+
+        start = count_num * (active_child_processes - 1);
+        end = count_num * active_child_processes - 1;
+        printf("start %d\t end %d\n", start, end);
+        child_buf = get_min_max(array, start, end);
         // parallel somehow
         if (with_files)
         {
+			write(0, "File\n", 5);
 			// use files here
 			char *file_name;
 			FILE *fp;
 
 			file_name = ft_itoa(active_child_processes);
-			fp = fopen(file_name, "w");
+			/**Открываем файл*/
+			if ((fp = fopen(file_name, "w")) == NULL)
+			{
+				printf("Can't open file %s\n", file_name);
+				exit(1);
+			}
+			/**Записываем в файл max и min*/
 			fprintf(fp, "%d\n%d\n", child_buf.max, child_buf.min);
-			fclose(fp);
-          	exit(EXIT_SUCCESS);
+			/**Закрываем файл*/
+			if (fclose(fp) != 0)
+				printf("File %s don't close!", file_name);
+
+			write(0, "EXIT\n", 5);
+			/**Завершаем процесс*/
+			exit(EXIT_SUCCESS);
         } else {
           // use pipe here
         }
@@ -167,6 +191,7 @@ int main(int argc, char **argv)
   while (active_child_processes > 0)
   {
     // your code here
+//    wait();
     active_child_processes -= 1;
   }
 
@@ -174,11 +199,13 @@ int main(int argc, char **argv)
   min_max.min = INT_MAX;
   min_max.max = INT_MIN;
 
-  /* Считываем из файлов min max
+  /** Считываем из файлов min max
    * и ищем наименьшее и наибольшее значение
-   * из всех найденных min max*/
-  for (int i = 0; i < pnum; i++)
+   * из всех найденных min max
+   **/
+  for (int i = 1; i <= pnum; i++)
   {
+  	write(0, "Read\t", 5);
     int min = INT_MAX;
     int max = INT_MIN;
 
@@ -189,13 +216,24 @@ int main(int argc, char **argv)
 		FILE *fp;
 
 		file_name = ft_itoa(i);
-		fp = fopen(file_name, "r");
+		printf("file name: %s\n", file_name);
+		if ((fp = fopen(file_name, "r"))== NULL)
+		{
+			printf("Can't open file %s\n", file_name);
+			exit(1);
+		}
+		/**Считываем min max из файла*/
 		fscanf(fp, "%i\n%i\n", &max, &min);
-		fclose(fp);
+		printf("max %d\tmin %d\n", max, min);
+		if (fclose(fp) != 0)
+			printf("File %s don't close!", file_name);
+		free(file_name);
+
 	} else {
       // read from pipes
     }
 
+    /**Сравниваем считанные min max с глобальными значениями*/
     if (min < min_max.min) min_max.min = min;
     if (max > min_max.max) min_max.max = max;
   }
