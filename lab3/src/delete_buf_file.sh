@@ -5,4 +5,3 @@ for ((i = 1; i <= count; i++))
 do
     rm ${i}
 done
-

@@ -15,7 +15,7 @@ OBJ_PARALLEL = $(patsubst %.c, %.o, $(SRC_PARALLEL))
 SRC_FE = fork_with_exec.c
 OBJ_FE = $(patsubst %.c, %.o, $(SRC_FE))
 
-all: sequential_min_max parallel_min_max
+all: sequential_min_max parallel_min_max fork_with_exec
 
 fork_with_exec: sequential_min_max $(OBJ_FE)
 	$(CC) $(CFLAGS) $(OBJ_FE) $(INCLUDES) -o fork_with_exec
