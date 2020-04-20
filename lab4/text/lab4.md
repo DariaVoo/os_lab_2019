@@ -16,7 +16,7 @@
 2. [Системный вызов waitpid. Здесь информация о WNOHANG](https://linux.die.net/man/2/waitpid)
 3. [Системный вызов signal](http://man7.org/linux/man-pages/man2/signal.2.html)
 4. [Системный вызов alarm](http://man7.org/linux/man-pages/man2/alarm.2.html)
-5. [Практика работы сигналов в Linux](https://habr.com/ru/post/141206/)
+5. [Практика работы с сигналами в Linux](https://habr.com/ru/post/141206/)
 
 ## Задание 2
 
