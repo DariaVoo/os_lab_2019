@@ -15,6 +15,20 @@
 #include "find_min_max.h"
 #include "utils.h"
 
+/* *
+ * чтобы увидеть, что alarm работает, запустите прогрумму с параметрами:
+ * ./parallel_min_max --seed 9 --array_size 900000000 --pnum 2 --timeout 1 -f
+ * */
+static void sighandler(int signum) {
+
+	printf("timeout signum: %d\n", signum);
+	if (kill(0, SIGKILL) == 0)
+		printf("Can't kill the process");
+	else
+		printf("Child process killed.\n");
+	exit(1);
+}
+
 int main(int argc, char **argv)
 {
 	int seed = -1;
@@ -115,7 +129,7 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-//  printf("seed %d\narray_size %d\npnum %d\n", seed, array_size, pnum);
+//  printf("seed %d\narray_size %d\ntimeout %d\tpnum %d\n", seed, array_size,timeout, pnum);
 
 	/*-------------------------------
 	* ------- Начинаем работу -------
@@ -146,6 +160,16 @@ int main(int argc, char **argv)
 		printf("Can't create pipe\n");
 		exit(-1);
 	}
+	printf("timeout %d\n", timeout);
+	if (timeout > 0) {
+
+		///Установка будильника на timeout
+		// По будильнику запускается функция sighandler
+		// и завершается работа программы
+		alarm(timeout);
+		///Привязка функции sighandler к сигналу SIGALRM
+		signal(SIGALRM, sighandler);
+	}
 	for (int i = 0; i < pnum; i++)
 	{
 		pid_t child_pid = fork();
@@ -154,6 +178,8 @@ int main(int argc, char **argv)
 			printf("child_pid %d\n", child_pid);
 			// successful fork
 			active_child_processes += 1;
+
+
 			if (child_pid == 0)
 			{
 				// child process
@@ -210,6 +236,7 @@ int main(int argc, char **argv)
 			return 1;
 		}
 	}
+
 
 	while (active_child_processes > 0)
 	{

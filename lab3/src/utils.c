@@ -9,7 +9,7 @@ void generate_array(int *array, unsigned int array_size, unsigned int seed)
   i = 0;
   while (i < array_size)
   {
-    array[i] = rand() % 1000;
+    array[i] = rand();
     i++;
   }
 }
