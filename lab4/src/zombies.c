@@ -6,7 +6,8 @@
 
 /* *
  * чтобы увидеть зомби процесс, выполните в терминале
- * ps aux | grep defunct
+ * ps -xal | grep defunct
+ * (col 4- parent pid)
  * или чтобы увидеть родителя и его зомби-процесс
  * ps -e --format pid,ppid,stat,cmd
  * */

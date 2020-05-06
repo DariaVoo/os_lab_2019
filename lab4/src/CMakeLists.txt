@@ -2,10 +2,14 @@ cmake_minimum_required(VERSION 3.15)
 project(src C)
 
 set(CMAKE_C_STANDARD 11)
-set(CMAKE_CXX_FLAGS "${CMAKE_CXX_FLAGS} -Wall -Wextra -Werror")
-include_directories(.)
+
+include_directories(libarray/includes)
 
 add_executable(src
-        Makefile
-        parallel_sum.c
-        process_memory.c)
+        libarray/includes/arraylib.h
+        libarray/generate_array.c
+        libarray/print_arr.c
+        libarray/sum_arr.c
+        process_memory.c
+        sum_array.c
+        zombies.c)
