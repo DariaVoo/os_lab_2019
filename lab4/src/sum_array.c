@@ -4,6 +4,7 @@
 
 #include <pthread.h>
 #include <getopt.h>
+#include <sys/time.h>
 
 #include "arraylib.h"
 
@@ -88,38 +89,37 @@ int parse(int argc, char **argv, uint32_t *threads_num, uint32_t *array_size, ui
 }
 
 int main(int argc, char **argv) {
-	/*
-	 *  TODO:
-	 *  threads_num by command line arguments
-	 *  array_size by command line arguments
-	 *	seed by command line arguments
-	 */
 	uint32_t threads_num = 0;
 	uint32_t array_size = 0;
 	uint32_t seed = 0;
-	pthread_t threads[threads_num];
 
 	if (parse(argc, argv, &threads_num, &array_size, &seed))
 		return (1);
 	else
 		printf("%d %d %d\n", threads_num, seed, array_size);
-	return (0);
-}
-/*
-	/*
-	 * TODO:
-	 * your code here
-	 * Generate array here
-	 *
 
+	pthread_t threads[threads_num];
 	int *array = malloc(sizeof(int) * array_size);
+	int count_num = array_size / threads_num;
+
+	generate_array(array, array_size, seed);
+	/*всякие вещи для замера времени, включаем секундомер*/
+	struct timeval start_time;
+	gettimeofday(&start_time, NULL);
+
 
 	t_sum_args args[threads_num];
-	for (uint32_t i = 0; i < threads_num; i++) {
-		if (pthread_create(&threads[i], NULL, thread_sum, (void *) &args)) {
+	for (uint32_t i = 0; i < threads_num; i++)
+	{
+		args[i].begin = count_num * i;
+		args[i].end = count_num * (i + 1);
+		args[i].array = array;
+		/* Создаём новый поток*/
+		if (pthread_create(&threads[i], NULL, thread_sum, (void *) &args[i])) {
 			printf("Error: pthread_create failed!\n");
 			return 1;
 		}
+
 	}
 
 	int total_sum = 0;
@@ -129,8 +129,14 @@ int main(int argc, char **argv) {
 		total_sum += sum;
 	}
 
+	/*выключаем секундомер и привоим время к нормальному виду*/
+	struct timeval finish_time;
+	gettimeofday(&finish_time, NULL);
+	double elapsed_time = (finish_time.tv_sec - start_time.tv_sec) * 1000.0;
+	elapsed_time += (finish_time.tv_usec - start_time.tv_usec) / 1000.0;
+
 	free(array);
 	printf("Total: %d\n", total_sum);
-	return 0;
+	printf("Elapsed time: %fms\n", elapsed_time);
+	return (0);
 }
-*/

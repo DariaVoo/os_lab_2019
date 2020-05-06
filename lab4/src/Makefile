@@ -31,7 +31,7 @@ process_memory: $(SRC_PROCMEM)
 
 posix_threads: $(LIB) $(SRC_PTHREADS)
 	$(CC) $(CFLAGS) $(LIB_HEADERS)  -c $(SRC_PTHREADS)
-	$(CC) $(CFLAGS) $(OBJ_PTHREADS) $(INCLUDES) $(LIB_HEADERS) $(LIB_FLAG) -o posix_threads
+	$(CC) $(CFLAGS) $(OBJ_PTHREADS) $(INCLUDES) $(LIB_HEADERS) $(LIB_FLAG) -lpthread -o posix_threads
 
 $(LIB):
 	make -sC $(LIB_DIR)
