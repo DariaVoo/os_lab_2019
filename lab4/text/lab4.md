@@ -66,6 +66,7 @@
 
 1. [Туториал по POSIX threads от университета Карнеги-Меллона (в этой лабе вам нужно только начало)](https://www.cs.cmu.edu/afs/cs/academic/class/15492-f07/www/pthreads.html#SCHEDULING)
 2. [Как можно мерить время (кстати в 3й лабораторной работе тоже есть пример)](https://www.gnu.org/software/libc/manual/html_node/Elapsed-Time.html)
+3. [Pthreads: Потоки в русле POSIX](https://habr.com/ru/post/326138/)
 
 ## Задание 6
 
