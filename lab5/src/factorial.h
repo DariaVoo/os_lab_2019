@@ -8,4 +8,10 @@
 #include <pthread.h>
 #include <getopt.h>
 
+typedef struct	s_factorial {
+	int p;
+	int begin;
+	int end;
+}				t_factorial;
+
 #endif
