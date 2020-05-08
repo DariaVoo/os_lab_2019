@@ -50,6 +50,7 @@
 ### Ресурсы
 
 1. [Статья о deadlock [wikipedia]](https://en.wikipedia.org/wiki/Deadlock)
+2. [Deadlock in OS](https://www.guru99.com/deadlock-in-operating-system.html)
 
 ## Перед тем, как сдавать
 
