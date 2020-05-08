@@ -37,6 +37,7 @@
 ### Ресурсы
 
 1. [Туториал по POSIX threads от университета Карнеги-Меллона](https://www.cs.cmu.edu/afs/cs/academic/class/15492-f07/www/pthreads.html#SCHEDULING)
+3. [Вычисление факториала по модулю](https://e-maxx.ru/algo/modular_factorial)
 
 ## Задание 3
 
