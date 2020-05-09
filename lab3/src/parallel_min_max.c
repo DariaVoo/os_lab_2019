@@ -162,7 +162,6 @@ int main(int argc, char **argv)
 	}
 	printf("timeout %d\n", timeout);
 	if (timeout > 0) {
-
 		///Установка будильника на timeout
 		// По будильнику запускается функция sighandler
 		// и завершается работа программы
@@ -209,6 +208,7 @@ int main(int argc, char **argv)
 						printf("File %s don't close!", file_name);
 
 					/**Завершаем процесс*/
+					sleep(10);
 					exit(EXIT_SUCCESS);
 				} else {
 					// use pipe here
@@ -226,6 +226,7 @@ int main(int argc, char **argv)
 					write(fd[1], "\n", 1);
 					/**Закрываем конец канала для записи*/
 					close(fd[1]);
+					sleep(10);
 					exit(1);
 				}
 			}

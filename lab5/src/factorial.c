@@ -13,7 +13,6 @@ int parse(int argc, char **argv, int *k, int *pnum, int *mod)
 	{
 		/*optid - индекс следующего элемента, который будет отсканирован*/
 		static struct option options[] = {
-//				{"k", required_argument, 0, 'k'},
 				{"pnum", required_argument, 0, 0},
 				{"mod", required_argument, 0, 0},
 				//для однозначного определения конца массива

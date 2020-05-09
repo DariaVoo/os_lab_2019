@@ -119,7 +119,6 @@ int main(int argc, char **argv) {
 			printf("Error: pthread_create failed!\n");
 			return 1;
 		}
-
 	}
 
 	int total_sum = 0;
