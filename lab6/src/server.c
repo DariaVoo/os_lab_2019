@@ -81,12 +81,14 @@ int main(int argc, char **argv)
 
 	if (parse(argc, argv, &tnum, &port))
 		return (1);
+	/*Создаём сокет*/
 	int server_fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (server_fd < 0) {
 		fprintf(stderr, "Can not create server socket!");
 		return 1;
 	}
 
+	/*Создаём структуру для приёма ответов*/
 	struct sockaddr_in server;
 	server.sin_family = AF_INET;
 	server.sin_port = htons((uint16_t)port);
@@ -147,10 +149,13 @@ int main(int argc, char **argv)
 			fprintf(stdout, "Receive: %lu %lu %lu\n", begin, end, mod);
 
 			t_factorial_args args[tnum];
+			int count_num =  (end - begin) / tnum;
 			for (int i = 0; i < tnum; i++) {
 				// TODO: parallel somehow
-				args[i].begin = 1;
-				args[i].end = 1;
+				args[i].begin = count_num * i;
+				args[i].end = count_num * (i + 1) + 1;
+//				args[i].begin = begin;
+//				args[i].end = end;
 				args[i].mod = mod;
 
 				if (pthread_create(&threads[i], NULL, thread_factorial,
@@ -161,9 +166,12 @@ int main(int argc, char **argv)
 			}
 
 			uint64_t total = 1;
+			uint64_t result = 0;
 			for (int i = 0; i < tnum; i++) {
-				uint64_t result = 0;
+				result = 0;
 				pthread_join(threads[i], (void **)&result);
+				fprintf(stdout, "result: %lu\n", result);
+
 				total = mult_modulo(total, result, mod);
 			}
 
