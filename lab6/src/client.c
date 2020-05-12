@@ -33,12 +33,8 @@ bool ConvertStringToUI64(const char *str, uint64_t *val)
 	return true;
 }
 
-int main(int argc, char **argv)
+int parse_cl(int argc, char **argv, uint64_t *k, uint64_t *mod, char servers[][255])
 {
-	uint64_t k = -1;
-	uint64_t mod = -1;
-	char servers[255] = {'\0'}; // TODO: explain why 255
-
 	while (true) {
 		static struct option options[] = {{"k", required_argument, 0, 0},
 										  {"mod", required_argument, 0, 0},
@@ -51,16 +47,26 @@ int main(int argc, char **argv)
 		if (c == -1)
 			break;
 
-		switch (c) {
+		switch (c)
+		{
 			case 0: {
-				switch (option_index) {
+				switch (option_index)
+				{
 					case 0:
-						ConvertStringToUI64(optarg, &k);
-						// TODO: your code here
+						ConvertStringToUI64(optarg, k);
+						if (*k <= 0)
+						{
+							printf("k must be a positive number\n");
+							return 1;
+						}
 						break;
 					case 1:
-						ConvertStringToUI64(optarg, &mod);
-						// TODO: your code here
+						ConvertStringToUI64(optarg, mod);
+						if (*mod <= 0)
+						{
+							printf("mod must be a positive number\n");
+							return 1;
+						}
 						break;
 					case 2:
 						// TODO: your code here
@@ -79,11 +85,22 @@ int main(int argc, char **argv)
 		}
 	}
 
-	if (k == -1 || mod == -1 || !strlen(servers)) {
+	if (*k == 0 || *mod == 0 || !strlen(*servers)) {
 		fprintf(stderr, "Using: %s --k 1000 --mod 5 --servers /path/to/file\n",
 				argv[0]);
 		return 1;
 	}
+	return (0);
+}
+
+int main(int argc, char **argv)
+{
+	uint64_t k = 0;
+	uint64_t mod = 0;
+	char servers[255] = {'\0'}; // TODO: explain why 255
+
+	if (parse_cl(argc, argv, &k, &mod, &servers))
+		return (1);
 
 	// TODO: for one server here, rewrite with servers from file
 	unsigned int servers_num = 1;
@@ -93,7 +110,7 @@ int main(int argc, char **argv)
 	memcpy(to[0].ip, "127.0.0.1", sizeof("127.0.0.1"));
 
 	// TODO: work continiously, rewrite to make parallel
-	for (int i = 0; i < servers_num; i++) {
+	for (unsigned int i = 0; i < servers_num; i++) {
 		struct hostent *hostname = gethostbyname(to[i].ip);
 		if (hostname == NULL) {
 			fprintf(stderr, "gethostbyname failed with %s\n", to[i].ip);
@@ -141,7 +158,7 @@ int main(int argc, char **argv)
 		// unite results
 		uint64_t answer = 0;
 		memcpy(&answer, response, sizeof(uint64_t));
-		printf("answer: %llu\n", answer);
+		printf("answer: %lu\n", answer);
 
 		close(sck);
 	}

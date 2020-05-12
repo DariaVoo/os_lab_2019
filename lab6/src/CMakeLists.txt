@@ -3,10 +3,11 @@ project(src C)
 
 set(CMAKE_C_STANDARD 11)
 
-add_executable(src
-        client.c
-        server.c
+include_directories(libfactorial)
 
+add_executable(src
         libfactorial/factorial.c
         libfactorial/factorial.h
-        libfactorial/mult_modulo.c)
+        libfactorial/mult_modulo.c
+        client.c
+        server.c)

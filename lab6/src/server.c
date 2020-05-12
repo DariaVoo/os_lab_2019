@@ -16,7 +16,7 @@
 
 void *thread_factorial(void *args)
 {
-	struct factorial_args *fargs = (struct factorial_args *)args;
+	t_factorial_args *fargs = (t_factorial_args *)args;
 	return (void *)(uint64_t *) factorial(fargs);
 }
 
@@ -24,8 +24,6 @@ int parse(int argc, char **argv, int *tnum, int *port)
 {
 	while (true)
 	{
-		int current_optind = optind ? optind : 1;
-
 		static struct option options[] = {{"port", required_argument, 0, 0},
 										  {"tnum", required_argument, 0, 0},
 										  {0, 0, 0, 0}};
@@ -40,16 +38,16 @@ int parse(int argc, char **argv, int *tnum, int *port)
 			case 0: {
 				switch (option_index) {
 					case 0:
-						port = atoi(optarg);
-						if (port <= 0)
+						*port = atoi(optarg);
+						if (*port <= 0)
 						{
 							printf("port must be a positive number\n");
 							return 1;
 						}
 						break;
 					case 1:
-						tnum = atoi(optarg);
-						if (tnum <= 0)
+						*tnum = atoi(optarg);
+						if (*tnum <= 0)
 						{
 							printf("tnum must be a positive number\n");
 							return 1;
@@ -68,7 +66,7 @@ int parse(int argc, char **argv, int *tnum, int *port)
 		}
 	}
 
-	if (port == -1 || tnum == -1) {
+	if (*port == -1 || *tnum == -1) {
 		fprintf(stderr, "Using: %s --port 20001 --tnum 4\n", argv[0]);
 		return (1);
 	}
@@ -132,7 +130,7 @@ int main(int argc, char **argv)
 				fprintf(stderr, "Client read failed\n");
 				break;
 			}
-			if (read < buffer_size) {
+			if ((unsigned int)read < buffer_size) {
 				fprintf(stderr, "Client send wrong data format\n");
 				break;
 			}
@@ -146,10 +144,10 @@ int main(int argc, char **argv)
 			memcpy(&end, from_client + sizeof(uint64_t), sizeof(uint64_t));
 			memcpy(&mod, from_client + 2 * sizeof(uint64_t), sizeof(uint64_t));
 
-			fprintf(stdout, "Receive: %llu %llu %llu\n", begin, end, mod);
+			fprintf(stdout, "Receive: %lu %lu %lu\n", begin, end, mod);
 
-			struct factorial_args args[tnum];
-			for (uint32_t i = 0; i < tnum; i++) {
+			t_factorial_args args[tnum];
+			for (int i = 0; i < tnum; i++) {
 				// TODO: parallel somehow
 				args[i].begin = 1;
 				args[i].end = 1;
@@ -163,13 +161,13 @@ int main(int argc, char **argv)
 			}
 
 			uint64_t total = 1;
-			for (uint32_t i = 0; i < tnum; i++) {
+			for (int i = 0; i < tnum; i++) {
 				uint64_t result = 0;
 				pthread_join(threads[i], (void **)&result);
 				total = mult_modulo(total, result, mod);
 			}
 
-			printf("Total: %llu\n", total);
+			printf("Total: %lu\n", total);
 
 			char buffer[sizeof(total)];
 			memcpy(buffer, &total, sizeof(total));
