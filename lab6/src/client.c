@@ -106,10 +106,8 @@ int main(int argc, char **argv)
 	if (parse_cl(argc, argv, &k, &mod, &servers))
 		return (1);
 
-	// TODO: for one server here, rewrite with servers from file
 	unsigned int servers_num = 5;
 	struct Server *to = malloc(sizeof(struct Server) * servers_num);
-	// TODO: delete this and parallel work between servers
 
 	if ((fd = open(servers, O_RDONLY)) == -1)
 	{
@@ -118,6 +116,7 @@ int main(int argc, char **argv)
 	}
 
 	i = 0;
+	/*Считаем доступные нам сервера*/
 	while (i < servers_num)
 	{
 		/*Считываем ip и порт из файла*/
@@ -142,13 +141,14 @@ int main(int argc, char **argv)
 
 
 	// TODO: work continiously, rewrite to make parallel
+	int count_num =  k / servers_num;
+	uint64_t answer = 0;
 	for (i = 0; i < servers_num; i++) {
 		struct hostent *hostname = gethostbyname(to[i].ip);
 		if (hostname == NULL) {
 			fprintf(stderr, "gethostbyname failed with %s\n", to[i].ip);
 			exit(1);
 		}
-		write(1, "OK\n", 3);
 
 		struct sockaddr_in server;
 		server.sin_family = AF_INET;
@@ -166,10 +166,9 @@ int main(int argc, char **argv)
 			exit(1);
 		}
 
-		// TODO: for one server
 		// parallel between servers
-		uint64_t begin = 1;
-		uint64_t end = k;
+		uint64_t begin = count_num * i;
+		uint64_t end = count_num * (i + 1) + 1;
 
 		char task[sizeof(uint64_t) * 3];
 		memcpy(task, &begin, sizeof(uint64_t));
@@ -187,10 +186,10 @@ int main(int argc, char **argv)
 			exit(1);
 		}
 
-		// TODO: from one server
 		// unite results
-		uint64_t answer = 0;
-		memcpy(&answer, response, sizeof(uint64_t));
+		uint64_t res = 0;
+		memcpy(&res, response, sizeof(uint64_t));
+		answer = mult_modulo(answer, res, mod);
 		printf("answer: %lu\n", answer);
 
 		close(sck);

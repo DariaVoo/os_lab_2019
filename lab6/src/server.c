@@ -151,11 +151,8 @@ int main(int argc, char **argv)
 			t_factorial_args args[tnum];
 			int count_num =  (end - begin) / tnum;
 			for (int i = 0; i < tnum; i++) {
-				// TODO: parallel somehow
 				args[i].begin = count_num * i;
 				args[i].end = count_num * (i + 1) + 1;
-//				args[i].begin = begin;
-//				args[i].end = end;
 				args[i].mod = mod;
 
 				if (pthread_create(&threads[i], NULL, thread_factorial,
