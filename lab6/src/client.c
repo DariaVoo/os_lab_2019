@@ -13,8 +13,9 @@
 #include <sys/types.h>
 
 struct Server {
-  char ip[255];
-  int port;
+//  char ip[255];
+	char *ip;
+	int port;
 };
 
 bool ConvertStringToUI64(const char *str, uint64_t *val)
@@ -98,24 +99,48 @@ int main(int argc, char **argv)
 	uint64_t k = 0;
 	uint64_t mod = 0;
 	char servers[255] = {'\0'}; // TODO: explain why 255
+	unsigned int i; /*счётчик*/
+	FILE *fp; /*дескриптор для списка серверов*/
 
 	if (parse_cl(argc, argv, &k, &mod, &servers))
 		return (1);
 
 	// TODO: for one server here, rewrite with servers from file
-	unsigned int servers_num = 1;
+	unsigned int servers_num = 5;
 	struct Server *to = malloc(sizeof(struct Server) * servers_num);
 	// TODO: delete this and parallel work between servers
-	to[0].port = 20001;
-	memcpy(to[0].ip, "127.0.0.1", sizeof("127.0.0.1"));
+
+	if ((fp = fopen(servers, "r"))== NULL)
+	{
+		printf("Can't open file %s\n", servers);
+		exit(1);
+	}
+
+	i = 0;
+	char str[255];
+	while (i < servers_num)
+	{
+		/*Считываем ip и порт из файла*/
+//		fscanf(fp, "%s:%i\n", to[i].ip, &to[i].port);
+		fscanf(fp, "%s\n", str);
+		printf("%s", str);
+//		printf("ip %s\tport %i\n", to[i].ip, to[i].port);
+		i++;
+//		to[0].port = 20001;
+//		memcpy(to[0].ip, "127.0.0.1", sizeof("127.0.0.1"));
+	}
+	if (fclose(fp) != 0)
+		printf("File %s don't close!", servers);
+
 
 	// TODO: work continiously, rewrite to make parallel
-	for (unsigned int i = 0; i < servers_num; i++) {
+	for (i = 0; i < servers_num; i++) {
 		struct hostent *hostname = gethostbyname(to[i].ip);
 		if (hostname == NULL) {
 			fprintf(stderr, "gethostbyname failed with %s\n", to[i].ip);
 			exit(1);
 		}
+		write(1, "OK\n", 3);
 
 		struct sockaddr_in server;
 		server.sin_family = AF_INET;
