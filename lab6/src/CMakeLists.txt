@@ -8,6 +8,7 @@ include_directories(libfactorial)
 add_executable(src
         libfactorial/factorial.c
         libfactorial/factorial.h
+        libfactorial/get_next_line.c
         libfactorial/mult_modulo.c
         client.c
         server.c)

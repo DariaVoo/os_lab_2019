@@ -11,10 +11,11 @@
 #include <netinet/ip.h>
 #include <sys/socket.h>
 #include <sys/types.h>
+#include <factorial.h>
+#include <fcntl.h>
 
 struct Server {
-//  char ip[255];
-	char *ip;
+	char ip[255];
 	int port;
 };
 
@@ -100,7 +101,7 @@ int main(int argc, char **argv)
 	uint64_t mod = 0;
 	char servers[255] = {'\0'}; // TODO: explain why 255
 	unsigned int i; /*счётчик*/
-	FILE *fp; /*дескриптор для списка серверов*/
+	int fd; /*дескриптор для списка серверов*/
 
 	if (parse_cl(argc, argv, &k, &mod, &servers))
 		return (1);
@@ -110,26 +111,33 @@ int main(int argc, char **argv)
 	struct Server *to = malloc(sizeof(struct Server) * servers_num);
 	// TODO: delete this and parallel work between servers
 
-	if ((fp = fopen(servers, "r"))== NULL)
+	if ((fd = open(servers, O_RDONLY)) == -1)
 	{
 		printf("Can't open file %s\n", servers);
 		exit(1);
 	}
 
 	i = 0;
-	char str[255];
 	while (i < servers_num)
 	{
 		/*Считываем ip и порт из файла*/
-//		fscanf(fp, "%s:%i\n", to[i].ip, &to[i].port);
-		fscanf(fp, "%s\n", str);
-		printf("%s", str);
-//		printf("ip %s\tport %i\n", to[i].ip, to[i].port);
+		char	*str, *istr;
+		char *ip;
+		char	sep[10] = ":";
+
+		if (get_next_line(fd, &str) < 0)
+			break ;
+		istr = strtok(str, sep);
+		if (istr != NULL) {
+			ip = istr;
+			memcpy(to[i].ip, ip, strlen(ip));
+			to[i].port = atoi((const char*)strtok(NULL, sep));
+		}
+		free(str);
+		printf("ip %s\tport %i\n", to[i].ip, to[i].port);
 		i++;
-//		to[0].port = 20001;
-//		memcpy(to[0].ip, "127.0.0.1", sizeof("127.0.0.1"));
 	}
-	if (fclose(fp) != 0)
+	if (close(fd) == -1)
 		printf("File %s don't close!", servers);
 
 
