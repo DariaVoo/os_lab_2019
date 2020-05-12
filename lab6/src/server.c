@@ -12,48 +12,18 @@
 #include <sys/types.h>
 
 #include "pthread.h"
+#include "factorial.h"
 
-struct FactorialArgs {
-	uint64_t begin;
-	uint64_t end;
-	uint64_t mod;
-};
-
-uint64_t MultModulo(uint64_t a, uint64_t b, uint64_t mod)
+void *thread_factorial(void *args)
 {
-	uint64_t result = 0;
-	a = a % mod;
-	while (b > 0) {
-		if (b % 2 == 1)
-			result = (result + a) % mod;
-		a = (a * 2) % mod;
-		b /= 2;
-	}
-
-	return result % mod;
+	struct factorial_args *fargs = (struct factorial_args *)args;
+	return (void *)(uint64_t *) factorial(fargs);
 }
 
-uint64_t Factorial(const struct FactorialArgs *args)
+int parse(int argc, char **argv, int *tnum, int *port)
 {
-	uint64_t ans = 1;
-
-	// TODO: your code here
-
-	return ans;
-}
-
-void *ThreadFactorial(void *args)
-{
-	struct FactorialArgs *fargs = (struct FactorialArgs *)args;
-	return (void *)(uint64_t *)Factorial(fargs);
-}
-
-int main(int argc, char **argv)
-{
-	int tnum = -1;
-	int port = -1;
-
-	while (true) {
+	while (true)
+	{
 		int current_optind = optind ? optind : 1;
 
 		static struct option options[] = {{"port", required_argument, 0, 0},
@@ -71,11 +41,19 @@ int main(int argc, char **argv)
 				switch (option_index) {
 					case 0:
 						port = atoi(optarg);
-						// TODO: your code here
+						if (port <= 0)
+						{
+							printf("port must be a positive number\n");
+							return 1;
+						}
 						break;
 					case 1:
 						tnum = atoi(optarg);
-						// TODO: your code here
+						if (tnum <= 0)
+						{
+							printf("tnum must be a positive number\n");
+							return 1;
+						}
 						break;
 					default:
 						printf("Index %d is out of options\n", option_index);
@@ -92,9 +70,19 @@ int main(int argc, char **argv)
 
 	if (port == -1 || tnum == -1) {
 		fprintf(stderr, "Using: %s --port 20001 --tnum 4\n", argv[0]);
-		return 1;
+		return (1);
 	}
+	return (0);
+}
 
+int main(int argc, char **argv)
+{
+	int tnum = -1;
+	int port = -1;
+
+
+	if (parse(argc, argv, &tnum, &port))
+		return (1);
 	int server_fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (server_fd < 0) {
 		fprintf(stderr, "Can not create server socket!");
@@ -160,15 +148,15 @@ int main(int argc, char **argv)
 
 			fprintf(stdout, "Receive: %llu %llu %llu\n", begin, end, mod);
 
-			struct FactorialArgs args[tnum];
+			struct factorial_args args[tnum];
 			for (uint32_t i = 0; i < tnum; i++) {
 				// TODO: parallel somehow
 				args[i].begin = 1;
 				args[i].end = 1;
 				args[i].mod = mod;
 
-				if (pthread_create(&threads[i], NULL, ThreadFactorial,
-								   (void *)&args[i])) {
+				if (pthread_create(&threads[i], NULL, thread_factorial,
+								   (void *) &args[i])) {
 					printf("Error: pthread_create failed!\n");
 					return 1;
 				}
@@ -178,7 +166,7 @@ int main(int argc, char **argv)
 			for (uint32_t i = 0; i < tnum; i++) {
 				uint64_t result = 0;
 				pthread_join(threads[i], (void **)&result);
-				total = MultModulo(total, result, mod);
+				total = mult_modulo(total, result, mod);
 			}
 
 			printf("Total: %llu\n", total);
