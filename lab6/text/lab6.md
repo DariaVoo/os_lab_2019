@@ -27,6 +27,7 @@
 
 1. [Manual pages](http://man7.org/linux/man-pages/)
 2. [TCP [Wikipedia]](https://en.wikipedia.org/wiki/Transmission_Control_Protocol)
+3. [Unix socket Tutorial](https://www.tutorialspoint.com/unix_sockets/index.htm)
 
 ### Заметка
 
