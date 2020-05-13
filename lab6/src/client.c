@@ -144,23 +144,26 @@ int main(int argc, char **argv)
 	int count_num =  k / servers_num;
 	uint64_t answer = 0;
 	for (i = 0; i < servers_num; i++) {
+		/*получаем хост по текущиму ip*/
 		struct hostent *hostname = gethostbyname(to[i].ip);
 		if (hostname == NULL) {
 			fprintf(stderr, "gethostbyname failed with %s\n", to[i].ip);
 			exit(1);
 		}
 
+		/*создаём сокет*/
 		struct sockaddr_in server;
 		server.sin_family = AF_INET;
-		server.sin_port = htons(to[i].port);
-		server.sin_addr.s_addr = *((unsigned long *)hostname->h_addr);
+		/*не забываем приводить порт и адрес к Network Byte Order*/
+		server.sin_port = htons(to[i].port); //16bit port
+		server.sin_addr.s_addr = *((unsigned long *)hostname->h_addr); //32bit IP
 
 		int sck = socket(AF_INET, SOCK_STREAM, 0);
 		if (sck < 0) {
 			fprintf(stderr, "Socket creation failed!\n");
 			exit(1);
 		}
-
+		/*подключаемся к серверу*/
 		if (connect(sck, (struct sockaddr *)&server, sizeof(server)) < 0) {
 			fprintf(stderr, "Connection failed\n");
 			exit(1);
@@ -174,12 +177,12 @@ int main(int argc, char **argv)
 		memcpy(task, &begin, sizeof(uint64_t));
 		memcpy(task + sizeof(uint64_t), &end, sizeof(uint64_t));
 		memcpy(task + 2 * sizeof(uint64_t), &mod, sizeof(uint64_t));
-
+		/*отправляем серверу запрос*/
 		if (send(sck, task, sizeof(task), 0) < 0) {
 			fprintf(stderr, "Send failed\n");
 			exit(1);
 		}
-
+		/*получаем от сервера ответ*/
 		char response[sizeof(uint64_t)];
 		if (recv(sck, response, sizeof(response), 0) < 0) {
 			fprintf(stderr, "Recieve failed\n");

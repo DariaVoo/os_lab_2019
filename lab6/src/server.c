@@ -88,7 +88,7 @@ int main(int argc, char **argv)
 		return 1;
 	}
 
-	/*Создаём структуру для приёма ответов*/
+	/*Создаём структуру для приёма ответов(сокет)*/
 	struct sockaddr_in server;
 	server.sin_family = AF_INET;
 	server.sin_port = htons((uint16_t)port);
