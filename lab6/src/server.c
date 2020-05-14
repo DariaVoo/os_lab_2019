@@ -81,7 +81,7 @@ int main(int argc, char **argv)
 
 	if (parse(argc, argv, &tnum, &port))
 		return (1);
-	/*Создаём сокет*/
+	/*Создаём дескриптор сокета*/
 	int server_fd = socket(AF_INET, SOCK_STREAM, 0);
 	if (server_fd < 0) {
 		fprintf(stderr, "Can not create server socket!");
@@ -96,13 +96,15 @@ int main(int argc, char **argv)
 
 	int opt_val = 1;
 	setsockopt(server_fd, SOL_SOCKET, SO_REUSEADDR, &opt_val, sizeof(opt_val));
-
+	/*назначаем сокету локальный адрес протокола*/
 	int err = bind(server_fd, (struct sockaddr *)&server, sizeof(server));
 	if (err < 0) {
 		fprintf(stderr, "Can not bind to socket!");
 		return 1;
 	}
-
+	/* подключаем листенер
+	 * (говорим, что ядро должно принимать запросы на подключение, направленные на этот сокет)
+	 * max число соединений = 128*/
 	err = listen(server_fd, 128);
 	if (err < 0) {
 		fprintf(stderr, "Could not listen on socket\n");
@@ -114,6 +116,7 @@ int main(int argc, char **argv)
 	while (true) {
 		struct sockaddr_in client;
 		socklen_t client_len = sizeof(client);
+		/* устанавливаем соединение с клиентом и получаем его дескриптор*/
 		int client_fd = accept(server_fd, (struct sockaddr *)&client, &client_len);
 
 		if (client_fd < 0) {

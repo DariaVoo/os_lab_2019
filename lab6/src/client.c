@@ -13,11 +13,17 @@
 #include <sys/types.h>
 #include <factorial.h>
 #include <fcntl.h>
+#include <pthread.h>
 
 struct Server {
-	char ip[255];
-	int port;
+	char	ip[255];
+	int		port;
 };
+
+typedef struct s_comm {
+	int sck;
+	t_factorial_args *fac;
+}				t_comm;
 
 bool ConvertStringToUI64(const char *str, uint64_t *val)
 {
@@ -95,18 +101,48 @@ int parse_cl(int argc, char **argv, uint64_t *k, uint64_t *mod, char servers[][2
 	return (0);
 }
 
+
+void *thread_response(void *args)
+{
+	t_comm *fargs = (t_comm *)args;
+
+	char task[sizeof(uint64_t) * 3];
+	memcpy(task, &(fargs->fac->begin), sizeof(uint64_t));
+	memcpy(task + sizeof(uint64_t), &(fargs->fac->end), sizeof(uint64_t));
+	memcpy(task + 2 * sizeof(uint64_t), &(fargs->fac->mod), sizeof(uint64_t));
+	/*отправляем серверу запрос*/
+	if (send(fargs->sck, task, sizeof(task), 0) < 0) {
+		fprintf(stderr, "Send failed\n");
+		exit(1);
+	}
+	/*получаем от сервера ответ*/
+	char response[sizeof(uint64_t)];
+	if (recv(fargs->sck, response, sizeof(response), 0) < 0) {
+		fprintf(stderr, "Recieve failed\n");
+		exit(1);
+	}
+
+	// unite results
+	uint64_t res = 0;
+	memcpy(&res, response, sizeof(uint64_t));
+	printf("ans: %lu\n", res);
+
+	close(fargs->sck);
+	return (void *)(uint64_t *)res;
+}
+
 int main(int argc, char **argv)
 {
 	uint64_t k = 0;
 	uint64_t mod = 0;
 	char servers[255] = {'\0'}; // TODO: explain why 255
-	unsigned int i; /*счётчик*/
-	int fd; /*дескриптор для списка серверов*/
+	unsigned int	i; /*счётчик*/
+	int				fd; /*дескриптор для списка серверов*/
 
 	if (parse_cl(argc, argv, &k, &mod, &servers))
 		return (1);
 
-	unsigned int servers_num = 5;
+	unsigned int servers_num = 3;
 	struct Server *to = malloc(sizeof(struct Server) * servers_num);
 
 	if ((fd = open(servers, O_RDONLY)) == -1)
@@ -140,9 +176,8 @@ int main(int argc, char **argv)
 		printf("File %s don't close!", servers);
 
 
-	// TODO: work continiously, rewrite to make parallel
 	int count_num =  k / servers_num;
-	uint64_t answer = 0;
+	pthread_t threads[servers_num];
 	for (i = 0; i < servers_num; i++) {
 		/*получаем хост по текущиму ip*/
 		struct hostent *hostname = gethostbyname(to[i].ip);
@@ -158,6 +193,7 @@ int main(int argc, char **argv)
 		server.sin_port = htons(to[i].port); //16bit port
 		server.sin_addr.s_addr = *((unsigned long *)hostname->h_addr); //32bit IP
 
+		/*создаём дескриптор сокета с IPv4 protocols(AD_INET), и протокол по умолчанию(0) для IPv4*/
 		int sck = socket(AF_INET, SOCK_STREAM, 0);
 		if (sck < 0) {
 			fprintf(stderr, "Socket creation failed!\n");
@@ -170,34 +206,29 @@ int main(int argc, char **argv)
 		}
 
 		// parallel between servers
-		uint64_t begin = count_num * i;
-		uint64_t end = count_num * (i + 1) + 1;
+		t_comm comm;
+		comm.sck = sck;
+		comm.fac->begin = count_num * i;
+		comm.fac->end = count_num * (i + 1) + 1;
+		comm.fac->mod = mod;
 
-		char task[sizeof(uint64_t) * 3];
-		memcpy(task, &begin, sizeof(uint64_t));
-		memcpy(task + sizeof(uint64_t), &end, sizeof(uint64_t));
-		memcpy(task + 2 * sizeof(uint64_t), &mod, sizeof(uint64_t));
-		/*отправляем серверу запрос*/
-		if (send(sck, task, sizeof(task), 0) < 0) {
-			fprintf(stderr, "Send failed\n");
-			exit(1);
+		if (pthread_create(&threads[i], NULL, thread_response,
+						   (void *) &comm)) {
+			printf("Error: pthread_create failed!\n");
+			return 1;
 		}
-		/*получаем от сервера ответ*/
-		char response[sizeof(uint64_t)];
-		if (recv(sck, response, sizeof(response), 0) < 0) {
-			fprintf(stderr, "Recieve failed\n");
-			exit(1);
-		}
-
-		// unite results
-		uint64_t res = 0;
-		memcpy(&res, response, sizeof(uint64_t));
-		answer = mult_modulo(answer, res, mod);
-		printf("answer: %lu\n", answer);
-
-		close(sck);
 	}
-	free(to);
 
+	uint64_t total = 1;
+	uint64_t result;
+	// unite results
+	for (i = 0; i < servers_num; i++) {
+		result = 0;
+		pthread_join(threads[i], (void **)&result);
+
+		total = mult_modulo(total, result, mod);
+	}
+	fprintf(stdout, "answer: %lu\n", total);
+	free(to);
 	return 0;
 }
