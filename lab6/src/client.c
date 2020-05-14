@@ -135,9 +135,9 @@ int main(int argc, char **argv)
 {
 	uint64_t k = 0;
 	uint64_t mod = 0;
-	char servers[255] = {'\0'}; // TODO: explain why 255
-	unsigned int	i; /*счётчик*/
-	int				fd; /*дескриптор для списка серверов*/
+	char servers[255] = {'\0'}; /* 255 - max path len*/
+	unsigned int	i; /* счётчик*/
+	int				fd; /* дескриптор для списка серверов*/
 
 	if (parse_cl(argc, argv, &k, &mod, &servers))
 		return (1);
