@@ -35,6 +35,7 @@ int main(int argc, char **argv)
 	servaddr.sin_family = AF_INET;
 	servaddr.sin_addr.s_addr = htonl(INADDR_ANY);
 	servaddr.sin_port = htons(atoi(argv[1]));
+	printf("addr %u\n", servaddr.sin_addr.s_addr);
 
 	if (bind(sockfd, (SADDR *)&servaddr, SLEN) < 0) {
 		perror("bind problem");
