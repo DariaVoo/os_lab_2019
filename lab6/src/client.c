@@ -77,7 +77,6 @@ int parse_cl(int argc, char **argv, uint64_t *k, uint64_t *mod, char servers[][2
 						}
 						break;
 					case 2:
-						// TODO: your code here
 						memcpy(servers, optarg, strlen(optarg));
 						break;
 					default:
